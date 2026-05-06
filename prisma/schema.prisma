@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  name         String
+  username     String        @unique
+  password     String
+  books        Book[]
+  transactions Transaction[]
+
+  @@map("users")
+}
+
+model Book {
+  id     Int    @id @default(autoincrement())
+  title  String
+  author String
+  price  Int
+  stock  Int
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  kategoriId Int
+  kategori   Kategori @relation(fields: [kategoriId], references: [id])
+
+  penerbitId Int
+  penerbit   Penerbit @relation(fields: [penerbitId], references: [id])
+
+  transactions Transaction[]
+
+  @@map("books")
+}
+
+model Kategori {
+  id        Int    @id @default(autoincrement())
+  nama      String
+  deskripsi String
+
+  books Book[]
+
+  @@map("categories")
+}
+
+model Penerbit {
+  id     Int    @id @default(autoincrement())
+  nama   String
+  alamat String
+  books  Book[]
+
+  @@map("penerbit")
+}
+
+model Transaction {
+  id        Int      @id @default(autoincrement())
+  qty       Int
+  total     Int
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  bookId    Int
+  book      Book     @relation(fields: [bookId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@map("transactions")
+}
